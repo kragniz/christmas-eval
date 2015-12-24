@@ -23,3 +23,9 @@ While 🎁 🎁 visions o🎁 🎁 visions f ⛄ ⛄ danc'd 👌👀👌👌👀
 ⛪ = ]
 🎶 = ,
 ```
+
+Usage:
+
+```bash
+$ ./christmas-eval comfy.xmas
+```
