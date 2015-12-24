@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+
+import sys
+import termios
+import tty
+
+
+def get_ch():
+    fd = sys.stdin.fileno()
+    old_fd = termios.tcgetattr(fd)
+    try:
+        tty.setraw(sys.stdin.fileno())
+        c = sys.stdin.read(1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_fd)
+    return c
+
+
+def sleigh(present):
+    _, santas_map = [], {}
+
+    for i, toy in enumerate(present):
+        if toy == '✝':
+            _ += [i]
+        if toy == '⛪':
+            start = _.pop()
+            santas_map[start] = i
+            santas_map[i] = start
+
+    snowman, snow, santa = [0], 0, 0
+
+    while santa < len(present):
+        toy = present[santa]
+
+        if toy == '✝' and snowman[snow] == 0:
+            santa = santas_map[santa]
+
+        if toy == '⛪' and snowman[snow] != 0:
+            santa = santas_map[santa]
+
+        if toy == '🎅':
+            print(chr(snowman[snow]), end='')
+
+        if toy == '🎶':
+            snowman[snow] = ord(get_ch())
+
+        if toy == '☃':
+            snow += 1
+
+        if snow == len(snowman):
+            snowman.append(0)
+
+        if toy == '⛄':
+            snow = 0 if snow <= 0 else snow - 1
+
+        if toy == '🎄':
+            snowman[snow] = snowman[snow] + 1 if snowman[snow] < 255 else 0
+
+        if toy == '🎁':
+            snowman[snow] = snowman[snow] - 1 if snowman[snow] > 0 else 255
+
+        santa += 1
+
+if __name__ == '__main__':
+    with open(sys.argv[1]) as f:
+        present = [c for c in f.read() if c in '🎅🎶✝⛪⛄☃🎄🎁']
+
+    sleigh(present)
